@@ -113,7 +113,7 @@ class SaveToSQLitePipeline:
         # Remonter de 3 niveaux pour atteindre scrapy_project/
         # pipelines.py → bookstoscrape_Scraper/ → bookstoscrape_Scraper/ → scrapy_project/
         current_file = os.path.abspath(__file__)
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_file)))
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(current_file)))))
         data_dir = os.path.join(project_root, 'data')
         os.makedirs(data_dir, exist_ok=True)
         
