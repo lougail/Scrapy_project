@@ -1,10 +1,10 @@
-# 📚 Books Scraper - Système de Veille Concurrentielle
+# Books Scraper - Système de Veille Concurrentielle
 
 Projet de scraping et d'analyse de données pour books.toscrape.com.
 
 Système automatisé permettant de collecter, nettoyer, stocker et exposer via API les données des livres du site books.toscrape.com.
 
-## 📋 Description du projet
+## Description du projet
 
 Dans le cadre d'une veille concurrentielle pour une enseigne de vente de livres, ce projet met en place un système capable de :
 
@@ -14,7 +14,7 @@ Dans le cadre d'une veille concurrentielle pour une enseigne de vente de livres,
 - Exposer les données via une API REST
 - Permettre l'analyse des données (prix moyens, top catégories, statistiques)
 
-## 🏗️ Architecture du projet
+## Architecture du projet
 
 ```
 scrapy_project/
@@ -49,7 +49,7 @@ Le projet respecte les principes de **Clean Code** et **Clean Architecture** :
 - **Réutilisabilité** : Code modulaire et facilement testable
 - **Pattern Repository** : Abstraction de l'accès aux données
 
-## 🚀 Installation
+## Installation
 
 ### Prérequis
 
@@ -61,7 +61,7 @@ Le projet respecte les principes de **Clean Code** et **Clean Architecture** :
 
 ```bash
 # 1. Cloner le repository
-git clone https://github.com/votre-username/scrapy_project.git
+git clone https://github.com/lougail/Scrapy_project.git
 cd scrapy_project
 
 # 2. Créer un environnement virtuel
@@ -77,7 +77,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 📊 Utilisation
+## Utilisation
 
 ### 1. Scraping des données
 
@@ -123,7 +123,7 @@ SELECT category, COUNT(*) FROM books GROUP BY category;
 SELECT * FROM books WHERE prix < 20 AND notation >= 4;
 ```
 
-## 🔍 API REST - Endpoints
+## API REST - Endpoints
 
 ### Endpoints principaux
 
@@ -158,23 +158,7 @@ GET http://localhost:8000/books/search?category=Fiction&min_price=10&max_price=3
 GET http://localhost:8000/stats
 ```
 
-Réponse exemple :
-
-```json
-{
-  "global": {
-    "total_livres": 1000,
-    "nb_categories": 50,
-    "prix_moyen": 35.67,
-    "note_moyenne": 3.2,
-    "stock_total": 15000
-  },
-  "prix_par_categorie": [...],
-  "top_categories": [...]
-}
-```
-
-## 🗄️ Schéma de la base de données
+## Schéma de la base de données
 
 **Table : books**
 
@@ -192,7 +176,7 @@ Réponse exemple :
 | image | TEXT | URL de l'image de couverture |
 | date_scraping | TEXT | Date/heure du scraping (ISO 8601) |
 
-## 🧹 Pipeline de nettoyage des données
+## Pipeline de nettoyage des données
 
 Le projet utilise 5 pipelines Scrapy pour garantir la qualité des données :
 
@@ -202,7 +186,7 @@ Le projet utilise 5 pipelines Scrapy pour garantir la qualité des données :
 4. **DuplicatesPipeline** : Détecte les doublons par UPC
 5. **SaveToSQLitePipeline** : Sauvegarde dans la base de données
 
-## 📦 Dépendances
+## Dépendances
 
 ```
 scrapy==2.13.3      # Framework de scraping
@@ -210,32 +194,7 @@ fastapi==0.115.0    # Framework API REST
 uvicorn==0.32.0     # Serveur ASGI
 ```
 
-## 🧪 Tests
-
-### Vérifier l'intégrité des données
-
-```bash
-# Compter les livres
-sqlite3 data/books.db "SELECT COUNT(*) FROM books;"
-
-# Vérifier qu'il n'y a pas de doublons
-sqlite3 data/books.db "SELECT COUNT(DISTINCT upc) FROM books;"
-
-# Afficher quelques exemples
-sqlite3 data/books.db "SELECT titre, prix, notation FROM books LIMIT 5;"
-```
-
-### Tester l'API
-
-```bash
-# Test de santé
-curl http://localhost:8000/health
-
-# Récupérer des statistiques
-curl http://localhost:8000/stats
-```
-
-## 🛠️ Technologies utilisées
+## Technologies utilisées
 
 - **Python 3.13** : Langage principal
 - **Scrapy** : Framework de web scraping
@@ -243,7 +202,7 @@ curl http://localhost:8000/stats
 - **FastAPI** : Framework API REST moderne et rapide
 - **Uvicorn** : Serveur ASGI haute performance
 
-## 📈 Fonctionnalités clés
+## Fonctionnalités clés
 
 ### Scraping
 
@@ -267,32 +226,14 @@ curl http://localhost:8000/stats
 - Gestion des erreurs HTTP appropriée
 - Validation automatique des paramètres
 
-## 🔮 Améliorations futures possibles
-
-- [ ] Migration vers PostgreSQL pour scalabilité
-- [ ] Ajout de tests unitaires et d'intégration
-- [ ] Déploiement sur Azure Cloud
-- [ ] Système de cache Redis pour l'API
-- [ ] Dashboard de visualisation (Plotly/Dash)
-- [ ] Scraping incrémental (uniquement les nouveaux livres)
-- [ ] Authentification JWT pour l'API
-
-## 👤 Auteur
+## Auteur
 
 Développé dans le cadre du projet "Scraping de données avec Scrapy" - Certification RNCP Développeur.se en intelligence artificielle
 
-## 📄 Licence
+## Licence
 
 Ce projet est à usage éducatif uniquement.
 
-## 📞 Support
-
-Pour toute question ou problème :
-
-1. Consulter la documentation interactive de l'API : `/docs`
-2. Vérifier les logs du scraper
-3. Contacter [votre email/contact]
-
 ---
 
-**Note** : Ce projet scrape books.toscrape.com, un site créé spécifiquement pour l'apprentissage du web scraping. Respectez toujours le fichier robots.txt et les conditions d'utilisation lors du scraping de sites web.
+**Note** : Ce projet scrape books.toscrape.com, un site créé spécifiquement pour l'apprentissage du web scraping.
