@@ -143,3 +143,47 @@ class BookRepository:
         categories = [row['category'] for row in cursor.fetchall()]
         conn.close()
         return categories
+    
+    def get_price_evolution(self, upc: str) -> List[Dict]:
+        """Évolution du prix d'un livre dans le temps."""
+        conn = self.db.get_connection()
+        cursor = conn.execute("""
+            SELECT titre, prix, date_scraping
+            FROM scraping_history
+            WHERE upc = ?
+            ORDER BY date_scraping ASC
+        """, (upc,))
+        results = [dict(row) for row in cursor.fetchall()]
+        conn.close()
+        return results
+
+    def get_price_changes(self, min_variation: float = 5.0) -> List[Dict]:
+        """Livres dont le prix a varié significativement."""
+        conn = self.db.get_connection()
+        cursor = conn.execute("""
+            SELECT 
+                h1.upc,
+                h1.titre,
+                MIN(h1.prix) as prix_min,
+                MAX(h1.prix) as prix_max,
+                MAX(h1.prix) - MIN(h1.prix) as variation
+            FROM scraping_history h1
+            GROUP BY h1.upc, h1.titre
+            HAVING variation >= ?
+            ORDER BY variation DESC
+        """, (min_variation,))
+        results = [dict(row) for row in cursor.fetchall()]
+        conn.close()
+        return results
+
+    def get_scraping_dates(self) -> List[str]:
+        """Liste toutes les dates de scraping."""
+        conn = self.db.get_connection()
+        cursor = conn.execute("""
+            SELECT DISTINCT date_scraping
+            FROM scraping_history
+            ORDER BY date_scraping DESC
+        """)
+        dates = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        return dates

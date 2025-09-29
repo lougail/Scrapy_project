@@ -16,7 +16,7 @@ Dans le cadre d'une veille concurrentielle pour une enseigne de vente de livres,
 
 ## Architecture du projet
 
-```
+```text
 scrapy_project/
 ├── src/
 │   ├── database/              # Module base de données
@@ -140,19 +140,19 @@ SELECT * FROM books WHERE prix < 20 AND notation >= 4;
 
 ### Exemples d'utilisation
 
-**Lister les livres (avec pagination)**
+#### Lister les livres (avec pagination)
 
 ```bash
 GET http://localhost:8000/books?limit=20&offset=0
 ```
 
-**Recherche avec filtres**
+#### Recherche avec filtres**
 
 ```bash
 GET http://localhost:8000/books/search?category=Fiction&min_price=10&max_price=30&min_rating=4
 ```
 
-**Statistiques globales**
+#### Statistiques globales**
 
 ```bash
 GET http://localhost:8000/stats
@@ -160,7 +160,7 @@ GET http://localhost:8000/stats
 
 ## Schéma de la base de données
 
-**Table : books**
+### Table : books
 
 | Colonne | Type | Description |
 |---------|------|-------------|
@@ -188,7 +188,7 @@ Le projet utilise 5 pipelines Scrapy pour garantir la qualité des données :
 
 ## Dépendances
 
-```
+```text
 scrapy==2.13.3      # Framework de scraping
 fastapi==0.115.0    # Framework API REST
 uvicorn==0.32.0     # Serveur ASGI

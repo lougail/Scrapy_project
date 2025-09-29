@@ -161,6 +161,29 @@ def get_statistics():
     }
 
 
+@app.get("/history/dates", tags=["History"])
+def get_scraping_dates():
+    """Liste toutes les dates de scraping."""
+    dates = repository.get_scraping_dates()
+    return {"count": len(dates), "dates": dates}
+
+
+@app.get("/history/book/{upc}", tags=["History"])
+def get_book_price_evolution(upc: str):
+    """Évolution du prix d'un livre dans le temps."""
+    evolution = repository.get_price_evolution(upc)
+    if not evolution:
+        raise HTTPException(status_code=404, detail="Aucun historique trouvé pour ce livre")
+    return {"upc": upc, "count": len(evolution), "  evolution": evolution}
+
+
+@app.get("/history/price-changes", tags=["History"])
+def get_price_changes(min_variation: float = Query(5.0, description="Variation minimale en £")):
+    """Livres avec variation de prix significative entre scrapings."""
+    changes = repository.get_price_changes(min_variation)
+    return {"count": len(changes), "changes": changes}
+
+
 @app.get("/health", tags=["Health"])
 def health_check():
     """Endpoint pour vérifier que l'API fonctionne."""

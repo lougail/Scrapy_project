@@ -1,18 +1,19 @@
 """Gestion de la connexion à la base de données."""
 import sqlite3
+from typing import Optional
 from pathlib import Path
 
 
 class DatabaseConnection:
     """Classe pour gérer la connexion SQLite."""
     
-    def __init__(self, db_path: str = None):
+    def __init__(self, db_path: Optional[str] = None):
         if db_path is None:
             # Remonte à la racine du projet
             project_root = Path(__file__).parent.parent.parent
-            db_path = project_root / 'data' / 'books.db'
+            db_path = str(project_root / 'data' / 'books.db')
         
-        self.db_path = str(db_path)
+        self.db_path = db_path
         self._ensure_db_exists()
     
     def _ensure_db_exists(self):

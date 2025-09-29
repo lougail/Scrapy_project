@@ -8,6 +8,7 @@
 import re
 import sqlite3
 import os
+from typing import Optional
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
 
@@ -105,8 +106,8 @@ class SaveToSQLitePipeline:
     """Pipeline 5 : Sauvegarde les données dans SQLite avec historique."""
     
     def __init__(self):
-        self.conn = None
-        self.cursor = None
+        self.conn: Optional[sqlite3.Connection] = None
+        self.cursor: Optional[sqlite3.Cursor] = None
     
     def open_spider(self, spider):
         """Appelé quand le spider démarre."""
@@ -156,11 +157,16 @@ class SaveToSQLitePipeline:
     
     def close_spider(self, spider):
         """Appelé quand le spider se termine."""
-        self.conn.close()
+        if self.conn:
+            self.conn.close()
         spider.logger.info("✅ Connexion à la base fermée")
     
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
+        
+        if not self.cursor or not self.conn:
+            spider.logger.error("❌ Connexion à la base non initialisée")
+            return item
         
         try:
             # 1. Mettre à jour la table books (état actuel)
