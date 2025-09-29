@@ -18,3 +18,7 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# BDD
+data/*.db
+data/*.db-journal
