@@ -102,7 +102,7 @@ class DuplicatesPipeline:
 
 
 class SaveToSQLitePipeline:
-    """Pipeline 5 : Sauvegarde les données dans SQLite."""
+    """Pipeline 5 : Sauvegarde les données dans SQLite avec historique."""
     
     def __init__(self):
         self.conn = None
@@ -110,8 +110,6 @@ class SaveToSQLitePipeline:
     
     def open_spider(self, spider):
         """Appelé quand le spider démarre."""
-        # Remonter de 3 niveaux pour atteindre scrapy_project/
-        # pipelines.py → bookstoscrape_Scraper/ → bookstoscrape_Scraper/ → scrapy_project/
         current_file = os.path.abspath(__file__)
         project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(current_file)))))
         data_dir = os.path.join(project_root, 'data')
@@ -121,6 +119,7 @@ class SaveToSQLitePipeline:
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         
+        # Table principale : état actuel des livres
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS books (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -136,8 +135,24 @@ class SaveToSQLitePipeline:
                 date_scraping TEXT
             )
         ''')
+        
+        # Table historique : trace de chaque scraping
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS scraping_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                upc TEXT,
+                titre TEXT,
+                prix REAL,
+                notation INTEGER,
+                disponibilite INTEGER,
+                category TEXT,
+                date_scraping TEXT,
+                FOREIGN KEY (upc) REFERENCES books(upc)
+            )
+        ''')
+        
         self.conn.commit()
-        spider.logger.info(f"✅ Base de données initialisée: {db_path}")
+        spider.logger.info(f"✅ Base de données avec historique initialisée: {db_path}")
     
     def close_spider(self, spider):
         """Appelé quand le spider se termine."""
@@ -148,6 +163,7 @@ class SaveToSQLitePipeline:
         adapter = ItemAdapter(item)
         
         try:
+            # 1. Mettre à jour la table books (état actuel)
             self.cursor.execute('''
                 INSERT OR REPLACE INTO books 
                 (titre, prix, notation, disponibilite, description, upc, category, url, image, date_scraping)
@@ -164,6 +180,22 @@ class SaveToSQLitePipeline:
                 adapter.get('image'),
                 adapter.get('date_scraping')
             ))
+            
+            # 2. Insérer dans l'historique (jamais d'écrasement)
+            self.cursor.execute('''
+                INSERT INTO scraping_history 
+                (upc, titre, prix, notation, disponibilite, category, date_scraping)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                adapter.get('upc'),
+                adapter.get('titre'),
+                adapter.get('prix'),
+                adapter.get('notation'),
+                adapter.get('disponibilite'),
+                adapter.get('category'),
+                adapter.get('date_scraping')
+            ))
+            
             self.conn.commit()
         except sqlite3.Error as e:
             spider.logger.error(f"❌ Erreur SQLite: {e}")
